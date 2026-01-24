@@ -1,3 +1,4 @@
 /huienv/
+/hackvenv/
 .env
 *.pyc
