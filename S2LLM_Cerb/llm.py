@@ -133,8 +133,289 @@ FEW_SHOT_EXAMPLES = [
                 {"action": "move", "from_area": "Trash_area", "to_area": "Neutral_area", "object": None}
             ]
         })
+    },
+
+    # Example 5
+    {
+        "role": "user",
+        "content": "get the forceps"
+    },
+    {
+        "role": "assistant",
+        "content": json.dumps({
+            "intent": "fetch",
+            "task_type": "tool_fetch",
+            "steps": [
+                {"action": "move", "from_area": None, "to_area": "Tool_area", "object": None},
+                {"action": "pick", "from_area": "Tool_area", "to_area": None, "object": "forceps"},
+                {"action": "move", "from_area": "Tool_area", "to_area": "Handover_area", "object": None},
+                {"action": "handover", "from_area": "Handover_area", "to_area": None, "object": "forceps"},
+                {"action": "move", "from_area": "Handover_area", "to_area": None, "object": None}
+            ]
+        })
+    },
+
+    # Example 6
+    {
+        "role": "user",
+        "content": "bring gloves"
+    },
+    {
+        "role": "assistant",
+        "content": json.dumps({
+            "intent": "fetch",
+            "task_type": "tool_fetch",
+            "steps": [
+                {"action": "move", "from_area": None, "to_area": "Tool_area", "object": None},
+                {"action": "pick", "from_area": "Tool_area", "to_area": None, "object": "gloves"},
+                {"action": "move", "from_area": "Tool_area", "to_area": "Handover_area", "object": None},
+                {"action": "handover", "from_area": "Handover_area", "to_area": None, "object": "gloves"},
+                {"action": "move", "from_area": "Handover_area", "to_area": None, "object": None}
+            ]
+        })
+    },
+
+    # Example 7
+    {
+        "role": "user",
+        "content": "fetch a syringe"
+    },
+    {
+        "role": "assistant",
+        "content": json.dumps({
+            "intent": "fetch",
+            "task_type": "tool_fetch",
+            "steps": [
+                {"action": "move", "from_area": None, "to_area": "Tool_area", "object": None},
+                {"action": "pick", "from_area": "Tool_area", "to_area": None, "object": "syringe"},
+                {"action": "move", "from_area": "Tool_area", "to_area": "Handover_area", "object": None},
+                {"action": "handover", "from_area": "Handover_area", "to_area": None, "object": "syringe"},
+                {"action": "move", "from_area": "Handover_area", "to_area": None, "object": None}
+            ]
+        })
+    },
+
+    # Example 8
+    {
+        "role": "user",
+        "content": "hand over the scissors"
+    },
+    {
+        "role": "assistant",
+        "content": json.dumps({
+            "intent": "handover",
+            "task_type": "tool_handover",
+            "steps": [
+                {"action": "move", "from_area": None, "to_area": "Tool_area", "object": None},
+                {"action": "pick", "from_area": "Tool_area", "to_area": None, "object": "scissors"},
+                {"action": "move", "from_area": "Tool_area", "to_area": "Handover_area", "object": None},
+                {"action": "handover", "from_area": "Handover_area", "to_area": None, "object": "scissors"},
+                {"action": "move", "from_area": "Handover_area", "to_area": None, "object": None}
+            ]
+        })
+    },
+
+    # Example 9
+    {
+        "role": "user",
+        "content": "pass the clamp"
+    },
+    {
+        "role": "assistant",
+        "content": json.dumps({
+            "intent": "handover",
+            "task_type": "tool_handover",
+            "steps": [
+                {"action": "move", "from_area": None, "to_area": "Tool_area", "object": None},
+                {"action": "pick", "from_area": "Tool_area", "to_area": None, "object": "clamp"},
+                {"action": "move", "from_area": "Tool_area", "to_area": "Handover_area", "object": None},
+                {"action": "handover", "from_area": "Handover_area", "to_area": None, "object": "clamp"},
+                {"action": "move", "from_area": "Handover_area", "to_area": None, "object": None}
+            ]
+        })
+    },
+
+    # Example 10
+    {
+        "role": "user",
+        "content": "dispose the gloves"
+    },
+    {
+        "role": "assistant",
+        "content": json.dumps({
+            "intent": "dispose",
+            "task_type": "waste_disposal",
+            "steps": [
+                {"action": "move", "from_area": None, "to_area": "Handover_area", "object": None},
+                {"action": "pick", "from_area": "Handover_area", "to_area": None, "object": "gloves"},
+                {"action": "move", "from_area": "Handover_area", "to_area": "Trash_area", "object": None},
+                {"action": "dispose", "from_area": "Trash_area", "to_area": None, "object": "gloves"},
+                {"action": "move", "from_area": "Trash_area", "to_area": None, "object": None}
+            ]
+        })
+    },
+
+    # Example 11
+    {
+        "role": "user",
+        "content": "throw away the syringe"
+    },
+    {
+        "role": "assistant",
+        "content": json.dumps({
+            "intent": "dispose",
+            "task_type": "waste_disposal",
+            "steps": [
+                {"action": "move", "from_area": None, "to_area": "Handover_area", "object": None},
+                {"action": "pick", "from_area": "Handover_area", "to_area": None, "object": "syringe"},
+                {"action": "move", "from_area": "Handover_area", "to_area": "Trash_area", "object": None},
+                {"action": "dispose", "from_area": "Trash_area", "to_area": None, "object": "syringe"},
+                {"action": "move", "from_area": "Trash_area", "to_area": None, "object": None}
+            ]
+        })
+    },
+
+    # Example 12
+    {
+        "role": "user",
+        "content": "discard the used gauze"
+    },
+    {
+        "role": "assistant",
+        "content": json.dumps({
+            "intent": "dispose",
+            "task_type": "waste_disposal",
+            "steps": [
+                {"action": "move", "from_area": None, "to_area": "Handover_area", "object": None},
+                {"action": "pick", "from_area": "Handover_area", "to_area": None, "object": "gauze"},
+                {"action": "move", "from_area": "Handover_area", "to_area": "Trash_area", "object": None},
+                {"action": "dispose", "from_area": "Trash_area", "to_area": None, "object": "gauze"},
+                {"action": "move", "from_area": "Trash_area", "to_area": None, "object": None}
+            ]
+        })
+    },
+
+    # Example 13
+    {
+        "role": "user",
+        "content": "return the unused gloves"
+    },
+    {
+        "role": "assistant",
+        "content": json.dumps({
+            "intent": "return",
+            "task_type": "tool_return",
+            "steps": [
+                {"action": "move", "from_area": None, "to_area": "Handover_area", "object": None},
+                {"action": "pick", "from_area": "Handover_area", "to_area": None, "object": "gloves"},
+                {"action": "move", "from_area": "Handover_area", "to_area": "Tool_area", "object": None},
+                {"action": "place", "from_area": "Tool_area", "to_area": None, "object": "gloves"},
+                {"action": "move", "from_area": "Tool_area", "to_area": None, "object": None}
+            ]
+        })
+    },
+
+    # Example 14
+    {
+        "role": "user",
+        "content": "put this tool back"
+    },
+    {
+        "role": "assistant",
+        "content": json.dumps({
+            "intent": "return",
+            "task_type": "tool_return",
+            "steps": [
+                {"action": "move", "from_area": None, "to_area": "Handover_area", "object": None},
+                {"action": "pick", "from_area": "Handover_area", "to_area": None, "object": "tool"},
+                {"action": "move", "from_area": "Handover_area", "to_area": "Tool_area", "object": None},
+                {"action": "place", "from_area": "Tool_area", "to_area": None, "object": "tool"},
+                {"action": "move", "from_area": "Tool_area", "to_area": None, "object": None}
+            ]
+        })
+    },
+
+    # Example 15
+    {
+        "role": "user",
+        "content": "wait"
+    },
+    {
+        "role": "assistant",
+        "content": json.dumps({
+            "intent": "standby",
+            "task_type": "idle",
+            "steps": [
+                {"action": "move", "from_area": None, "to_area": None, "object": None}
+            ]
+        })
+    },
+
+    # Example 16
+    {
+        "role": "user",
+        "content": "stand by"
+    },
+    {
+        "role": "assistant",
+        "content": json.dumps({
+            "intent": "standby",
+            "task_type": "idle",
+            "steps": [
+                {"action": "move", "from_area": None, "to_area": None, "object": None}
+            ]
+        })
+    },
+
+    # Example 17
+    {
+        "role": "user",
+        "content": "go back to home"
+    },
+    {
+        "role": "assistant",
+        "content": json.dumps({
+            "intent": "reset",
+            "task_type": "reset_position",
+            "steps": [
+                {"action": "move", "from_area": None, "to_area": None, "object": None}
+            ]
+        })
+    },
+
+    # Example 18 
+    {
+        "role": "user",
+        "content": "reset position"
+    },
+    {
+        "role": "assistant",
+        "content": json.dumps({
+            "intent": "reset",
+            "task_type": "reset_position",
+            "steps": [
+                {"action": "move", "from_area": None, "to_area": None, "object": None}
+            ]
+        })
+    },
+
+    # Example 19
+    {
+        "role": "user",
+        "content": "reset position"
+    },
+    {
+        "role": "assistant",
+        "content": json.dumps({
+            "intent": "reset",
+            "task_type": "reset_position",
+            "steps": [
+                {"action": "move", "from_area": None, "to_area": None, "object": None}
+            ]
+        })
     }
 ]
+
 
 
 def query_cerebras(user_text: str) -> str:
