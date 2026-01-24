@@ -231,6 +231,75 @@ def process_gesture_recognition(frame):
         add_status_message(f"✗ Gesture recognition error: {str(e)}", "error")
         return ""
 
+def gesture_to_action(gesture_name: str):
+    """
+    Map gesture name to action text
+    
+    Args:
+        gesture_name: The detected gesture name
+        
+    Returns:
+        tuple: (action_text, is_valid_gesture)
+    """
+    gesture_mapping = {
+        'thumbs_up': 'Bring the cathether',
+        'open_palm': 'Go back to neutral position',
+        'closed_fist': 'Stop'
+    }
+    
+    if gesture_name.lower() in gesture_mapping:
+        action_text = gesture_mapping[gesture_name.lower()]
+        return action_text, True
+    else:
+        return "", False
+
+def process_gesture_action_to_llm(gesture_name: str):
+    """
+    Process gesture name by converting to action text and feeding to LLM
+    
+    Args:
+        gesture_name: The detected gesture name
+        
+    Returns:
+        str: LLM response with instructions
+    """
+    try:
+        if not gesture_name.strip():
+            add_status_message("⚠️ No gesture to process", "warning")
+            return ""
+        
+        # Convert gesture to action text
+        action_text, is_valid = gesture_to_action(gesture_name)
+        
+        if not is_valid:
+            add_status_message(
+                f"⚠️ Gesture '{gesture_name}' not recognized. Valid gestures: thumbs_up, open_palm, closed_fist",
+                "warning"
+            )
+            return ""
+        
+        add_status_message(f"👆 Gesture '{gesture_name}' → Action: '{action_text}'", "info")
+        
+        # Create a prompt for LLM to generate instructions
+        llm_prompt = f"Generate detailed step-by-step instructions for the following medical robot action: {action_text}"
+        
+        add_status_message(f"🤖 Processing action through LLM: '{action_text}'", "info")
+        
+        # Query LLM with the action text
+        llm_response = query_cerebras(llm_prompt)
+        
+        if llm_response:
+            st.session_state.llm_output = llm_response
+            add_status_message("✓ LLM generated instructions successfully", "success")
+            return llm_response
+        else:
+            add_status_message("✗ LLM returned empty response", "error")
+            return ""
+            
+    except Exception as e:
+        add_status_message(f"✗ Error processing gesture action: {str(e)}", "error")
+        return ""
+
 def process_llm_orchestrator(text_input: str):
     """Process text through LLM orchestrator"""
     try:
