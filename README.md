@@ -62,4 +62,4 @@ requirements.txt        # Python dependencies
 
 ## Support
 
-For detailed documentation, architecture overview, and troubleshooting, refer to the full documentation in the project files.
+For detailed information, architecture overview, and troubleshooting, contact the Team.
