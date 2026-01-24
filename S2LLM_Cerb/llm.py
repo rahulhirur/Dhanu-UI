@@ -150,7 +150,7 @@ FEW_SHOT_EXAMPLES = [
                 {"action": "pick", "from_area": "Tool_area", "to_area": None, "object": "forceps"},
                 {"action": "move", "from_area": "Tool_area", "to_area": "Handover_area", "object": None},
                 {"action": "handover", "from_area": "Handover_area", "to_area": None, "object": "forceps"},
-                {"action": "move", "from_area": "Handover_area", "to_area": None, "object": None}
+                {"action": "move", "from_area": "Handover_area", "to_area": "Neutral_area", "object": None}
             ]
         })
     },
@@ -170,7 +170,7 @@ FEW_SHOT_EXAMPLES = [
                 {"action": "pick", "from_area": "Tool_area", "to_area": None, "object": "gloves"},
                 {"action": "move", "from_area": "Tool_area", "to_area": "Handover_area", "object": None},
                 {"action": "handover", "from_area": "Handover_area", "to_area": None, "object": "gloves"},
-                {"action": "move", "from_area": "Handover_area", "to_area": None, "object": None}
+                {"action": "move", "from_area": "Handover_area", "to_area": "Neutral_area", "object": None}
             ]
         })
     },
@@ -190,7 +190,7 @@ FEW_SHOT_EXAMPLES = [
                 {"action": "pick", "from_area": "Tool_area", "to_area": None, "object": "syringe"},
                 {"action": "move", "from_area": "Tool_area", "to_area": "Handover_area", "object": None},
                 {"action": "handover", "from_area": "Handover_area", "to_area": None, "object": "syringe"},
-                {"action": "move", "from_area": "Handover_area", "to_area": None, "object": None}
+                {"action": "move", "from_area": "Handover_area", "to_area": "Neutral_area", "object": None}
             ]
         })
     },
@@ -210,7 +210,7 @@ FEW_SHOT_EXAMPLES = [
                 {"action": "pick", "from_area": "Tool_area", "to_area": None, "object": "scissors"},
                 {"action": "move", "from_area": "Tool_area", "to_area": "Handover_area", "object": None},
                 {"action": "handover", "from_area": "Handover_area", "to_area": None, "object": "scissors"},
-                {"action": "move", "from_area": "Handover_area", "to_area": None, "object": None}
+                {"action": "move", "from_area": "Handover_area", "to_area": "Neutral_area", "object": None}
             ]
         })
     },
@@ -230,7 +230,7 @@ FEW_SHOT_EXAMPLES = [
                 {"action": "pick", "from_area": "Tool_area", "to_area": None, "object": "clamp"},
                 {"action": "move", "from_area": "Tool_area", "to_area": "Handover_area", "object": None},
                 {"action": "handover", "from_area": "Handover_area", "to_area": None, "object": "clamp"},
-                {"action": "move", "from_area": "Handover_area", "to_area": None, "object": None}
+                {"action": "move", "from_area": "Handover_area", "to_area": "Neutral_area", "object": None}
             ]
         })
     },
@@ -250,7 +250,7 @@ FEW_SHOT_EXAMPLES = [
                 {"action": "pick", "from_area": "Handover_area", "to_area": None, "object": "gloves"},
                 {"action": "move", "from_area": "Handover_area", "to_area": "Trash_area", "object": None},
                 {"action": "dispose", "from_area": "Trash_area", "to_area": None, "object": "gloves"},
-                {"action": "move", "from_area": "Trash_area", "to_area": None, "object": None}
+                {"action": "move", "from_area": "Trash_area", "to_area": "Neutral_area", "object": None}
             ]
         })
     },
@@ -270,7 +270,7 @@ FEW_SHOT_EXAMPLES = [
                 {"action": "pick", "from_area": "Handover_area", "to_area": None, "object": "syringe"},
                 {"action": "move", "from_area": "Handover_area", "to_area": "Trash_area", "object": None},
                 {"action": "dispose", "from_area": "Trash_area", "to_area": None, "object": "syringe"},
-                {"action": "move", "from_area": "Trash_area", "to_area": None, "object": None}
+                {"action": "move", "from_area": "Trash_area", "to_area": "Neutral_area", "object": None}
             ]
         })
     },
@@ -290,7 +290,7 @@ FEW_SHOT_EXAMPLES = [
                 {"action": "pick", "from_area": "Handover_area", "to_area": None, "object": "gauze"},
                 {"action": "move", "from_area": "Handover_area", "to_area": "Trash_area", "object": None},
                 {"action": "dispose", "from_area": "Trash_area", "to_area": None, "object": "gauze"},
-                {"action": "move", "from_area": "Trash_area", "to_area": None, "object": None}
+                {"action": "move", "from_area": "Trash_area", "to_area": "Neutral_area", "object": None}
             ]
         })
     },
@@ -310,7 +310,7 @@ FEW_SHOT_EXAMPLES = [
                 {"action": "pick", "from_area": "Handover_area", "to_area": None, "object": "gloves"},
                 {"action": "move", "from_area": "Handover_area", "to_area": "Tool_area", "object": None},
                 {"action": "place", "from_area": "Tool_area", "to_area": None, "object": "gloves"},
-                {"action": "move", "from_area": "Tool_area", "to_area": None, "object": None}
+                {"action": "move", "from_area": "Tool_area", "to_area": "Neutral_area", "object": None}
             ]
         })
     },
@@ -330,7 +330,7 @@ FEW_SHOT_EXAMPLES = [
                 {"action": "pick", "from_area": "Handover_area", "to_area": None, "object": "tool"},
                 {"action": "move", "from_area": "Handover_area", "to_area": "Tool_area", "object": None},
                 {"action": "place", "from_area": "Tool_area", "to_area": None, "object": "tool"},
-                {"action": "move", "from_area": "Tool_area", "to_area": None, "object": None}
+                {"action": "move", "from_area": "Tool_area", "to_area": "Neutral_area", "object": None}
             ]
         })
     },
@@ -447,4 +447,5 @@ def query_cerebras(user_text: str) -> str:
     )
 
     return response.choices[0].message.content
+
 
