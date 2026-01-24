@@ -2,6 +2,10 @@
 
 A comprehensive Streamlit application for multi-modal robot control integrating camera feed, microphone input, gesture recognition, speech-to-text, and LLM-based task orchestration.
 
+## Home Page
+
+![DhanUI Homepage](assets/asset_1_homepage.png)
+
 ## Quick Start
 
 ### Prerequisites
