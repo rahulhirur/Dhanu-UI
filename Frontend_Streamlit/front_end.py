@@ -6,6 +6,7 @@ import sys
 import os
 from datetime import datetime
 import json
+import subprocess
 
 # Add parent directories to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
@@ -13,6 +14,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from MediaPipe_Model.media_pipe_video import GestureRecognitionApp
 from S2LLM_Cerb.voice_to_text import listen_and_transcribe
 from S2LLM_Cerb.llm import query_cerebras
+
+from un_run.uni_runner import unity_runner
 
 # ============================================================================
 # PAGE CONFIGURATION
@@ -322,7 +325,7 @@ def process_llm_orchestrator(text_input: str):
     except Exception as e:
         add_status_message(f"✗ LLM processing error: {str(e)}", "error")
         return ""
-
+    
 # ============================================================================
 # MAIN UI LAYOUT
 # ============================================================================
@@ -387,6 +390,12 @@ with st.sidebar:
             process_llm_orchestrator(combined)
         else:
             add_status_message("⚠️ No input data (gesture or speech) to process", "warning")
+
+    st.divider()
+
+    # Run Unity Runner
+    if st.button("🎮 Run Unity Runner"):
+        unity_runner()
 
 # Main content area
 main_col1, main_col2 = st.columns(2)
