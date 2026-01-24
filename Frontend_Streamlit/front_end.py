@@ -4,9 +4,10 @@ import threading
 import queue
 import sys
 import os
-from datetime import datetime
+from datetime import datetime, time
 import json
 import subprocess
+import time as timex
 
 # Add parent directories to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
@@ -74,6 +75,9 @@ if 'camera_frame' not in st.session_state:
     
 if 'gesture_text' not in st.session_state:
     st.session_state.gesture_text = ""
+
+if 'sub_response' not in st.session_state:
+    st.session_state.sub_response = ""
     
 if 'speech_text' not in st.session_state:
     st.session_state.speech_text = ""
@@ -92,6 +96,9 @@ if 'gesture_recognizer' not in st.session_state:
     
 if 'camera_thread' not in st.session_state:
     st.session_state.camera_thread = None
+
+if "final_recognized_gesture_app" not in st.session_state:
+    st.session_state.final_recognized_gesture_app = None
 
 # ============================================================================
 # UTILITY FUNCTIONS
@@ -138,15 +145,17 @@ def initialize_gesture_recognizer():
             add_status_message(f"Model not found at {model_path}", "error")
             return None
         
-        recognizer = GestureRecognitionApp(
+        recognizer_app1 = GestureRecognitionApp(
             model_path=model_path,
             camera_index=0
         )
         
-        if recognizer.initialize_recognizer() and recognizer.initialize_camera():
-            recognizer.start_time = __import__('time').time()
+        st.session_state.final_recognized_gesture_app = recognizer_app1
+
+        if recognizer_app1.initialize_recognizer() and recognizer_app1.initialize_camera():
+            recognizer_app1.start_time = __import__('time').time()
             add_status_message("✓ Gesture recognizer initialized successfully", "success")
-            return recognizer
+            return recognizer_app1
         else:
             add_status_message("✗ Failed to initialize gesture recognizer", "error")
             return None
@@ -208,23 +217,25 @@ def process_gesture_recognition(frame):
         add_status_message("👆 Processing gesture...", "info")
         
         # Process frame
-        recognizer = st.session_state.gesture_recognizer
-        recognizer.process_frame(frame)
+        # recognizer_app = st.session_state.gesture_recognizer
+        st.session_state.final_recognized_gesture_app.process_frame(frame)
         
         # Get latest detected gestures
-        gestures = recognizer.get_detected_gestures()
-        
+        gestures = st.session_state.final_recognized_gesture_app.get_detected_gestures()
+        timex.sleep(0.5)
+          # Allow some time for processing
+        # st.info(gestures)
         if gestures:
             latest_gesture = gestures[-1]
             gesture_name = latest_gesture['gesture']
             confidence = latest_gesture['confidence']
             
-            st.session_state.gesture_text = gesture_name
+            
             add_status_message(
                 f"✓ Gesture detected: {gesture_name} (Confidence: {confidence:.2f})",
                 "success"
             )
-            recognizer.clear_gestures()
+            st.session_state.final_recognized_gesture_app.clear_gestures()
             return gesture_name
         else:
             add_status_message("⚠️ No gesture detected in frame", "warning")
@@ -245,7 +256,7 @@ def gesture_to_action(gesture_name: str):
         tuple: (action_text, is_valid_gesture)
     """
     gesture_mapping = {
-        'thumbs_up': 'Bring the cathether',
+        'thumb_up': 'Bring the cathether',
         'open_palm': 'Go back to neutral position',
         'closed_fist': 'Stop'
     }
@@ -380,11 +391,27 @@ with st.sidebar:
     if st.button("🔧 Initialize Gesture Recognizer"):
         st.session_state.gesture_recognizer = initialize_gesture_recognizer()
     
+    if st.button("Run Gesture Recognition on Captured Frame"):
+        if st.session_state.camera_frame is not None:
+            gest_name = process_gesture_recognition(st.session_state.camera_frame)
+            st.session_state.gesture_text = gest_name
+            add_status_message(f"Gesture Set Final: {gest_name}", "info")
+        else:
+            add_status_message("⚠️ No captured frame to process", "warning")
+            st.session_state.gesture_text = ""
     st.divider()
     
+
+    if st.session_state.gesture_text is not None:
+        if len(st.session_state.gesture_text) > 1:
+            st.session_state.sub_response=gesture_to_action(st.session_state.gesture_text)
+            add_status_message(f"Gesture Action: {st.session_state.sub_response}", "info")
+# add Gesture Action to LLM Button
+
+
     # Process Button
     if st.button("⚡ Process Through LLM Orchestrator", use_container_width=True):
-        combined = f"{st.session_state.gesture_text} {st.session_state.speech_text}".strip()
+        combined = f"{st.session_state.sub_response} {st.session_state.speech_text}".strip()
         if combined:
             st.session_state.combined_text = combined
             process_llm_orchestrator(combined)

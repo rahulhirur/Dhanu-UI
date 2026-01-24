@@ -7,7 +7,7 @@ def listen_and_transcribe():
     # Open the default microphone as source
     with sr.Microphone() as source:
         print("Adjusting for ambient noise... (3 sec)")
-        recognizer.adjust_for_ambient_noise(source, duration=3)
+        recognizer.adjust_for_ambient_noise(source, duration=1)
 
         print("Say something!")
         audio = recognizer.listen(source)
