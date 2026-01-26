@@ -18,6 +18,41 @@ from S2LLM_Cerb.llm import query_cerebras
 
 from un_run.uni_runner import unity_runner
 
+import pyttsx3
+
+
+def text_to_speech(text, rate=150, volume=0.7, pitch=75, voice_index=1):
+    """
+    Convert text to speech with customizable parameters.
+    
+    Args:
+        text (str): The text to be spoken
+        rate (int): Speaking rate (default: 150)
+        volume (float): Volume level between 0 and 1 (default: 0.7)
+        pitch (int): Pitch value between 0-100 (default: 75)
+        voice_index (int): Voice index (0 for male, 1 for female, default: 1)
+    """
+    engine = pyttsx3.init()  # object creation
+    
+    # Set RATE
+    engine.setProperty("rate", rate)
+    
+    # Set VOLUME
+    engine.setProperty("volume", volume)
+    
+    # Set VOICE
+    voices = engine.getProperty("voices")
+    if voice_index < len(voices):
+        engine.setProperty("voice", voices[voice_index].id)
+    
+    # Set PITCH
+    engine.setProperty("pitch", pitch)
+    
+    # Speak the text
+    engine.say(text)
+    engine.runAndWait()
+    engine.stop()
+
 # ============================================================================
 # PAGE CONFIGURATION
 # ============================================================================
@@ -405,13 +440,20 @@ with st.sidebar:
     if st.session_state.gesture_text is not None:
         if len(st.session_state.gesture_text) > 1:
             st.session_state.sub_response=gesture_to_action(st.session_state.gesture_text)
+            
             add_status_message(f"Gesture Action: {st.session_state.sub_response}", "info")
 # add Gesture Action to LLM Button
 
 
     # Process Button
     if st.button("⚡ Process Through LLM Orchestrator", use_container_width=True):
+        if len(st.session_state.sub_response) > 1:
+            text_to_speech(f"Gesture recognized as {st.session_state.sub_response}. Executing action.")
+
         combined = f"{st.session_state.sub_response} {st.session_state.speech_text}".strip()
+        
+
+
         if combined:
             st.session_state.combined_text = combined
             process_llm_orchestrator(combined)
@@ -436,7 +478,7 @@ with main_col1:
         st.subheader("📹 Camera Preview")
         if st.session_state.camera_frame is not None:
             frame_rgb = cv2.cvtColor(st.session_state.camera_frame, cv2.COLOR_BGR2RGB)
-            st.image(frame_rgb, use_column_width=True)
+            st.image(frame_rgb, caption="Captured Camera Frame")
         else:
             st.info("Click 'Capture Frame' to see preview")
     
@@ -477,6 +519,12 @@ with main_col2:
             # Try to parse as JSON and display nicely
             output_json = json.loads(st.session_state.llm_output)
             st.json(output_json)
+
+            #Save Json file to a specfic location
+            locat = os.path.join(r"C:\Users\kmu61\Downloads\Faps_unity-main\Faps_unity-main\Assets\Plans", 'tool_delivery_plan.json')
+            with open(locat, 'w') as json_file:
+                json.dump(output_json, json_file, indent=4)
+            
             
             # Display summary
             st.subheader("📋 Task Summary")
