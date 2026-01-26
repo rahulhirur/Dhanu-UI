@@ -36,4 +36,5 @@ def text_to_speech(text, rate=150, volume=0.7, pitch=75, voice_index=1):
 
 # Example usage
 if __name__ == "__main__":
+    print("Talking")
     text_to_speech("Confirmation Doctor, I will be terminating my task now!")

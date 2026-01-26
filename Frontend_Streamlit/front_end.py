@@ -4,8 +4,10 @@ import threading
 import queue
 import sys
 import os
-from datetime import datetime
+from datetime import datetime, time
 import json
+import subprocess
+import time as timex
 
 # Add parent directories to path for imports
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
@@ -13,6 +15,43 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from MediaPipe_Model.media_pipe_video import GestureRecognitionApp
 from S2LLM_Cerb.voice_to_text import listen_and_transcribe
 from S2LLM_Cerb.llm import query_cerebras
+
+from un_run.uni_runner import unity_runner
+
+import pyttsx3
+
+
+def text_to_speech(text, rate=150, volume=0.7, pitch=75, voice_index=1):
+    """
+    Convert text to speech with customizable parameters.
+    
+    Args:
+        text (str): The text to be spoken
+        rate (int): Speaking rate (default: 150)
+        volume (float): Volume level between 0 and 1 (default: 0.7)
+        pitch (int): Pitch value between 0-100 (default: 75)
+        voice_index (int): Voice index (0 for male, 1 for female, default: 1)
+    """
+    engine = pyttsx3.init()  # object creation
+    
+    # Set RATE
+    engine.setProperty("rate", rate)
+    
+    # Set VOLUME
+    engine.setProperty("volume", volume)
+    
+    # Set VOICE
+    voices = engine.getProperty("voices")
+    if voice_index < len(voices):
+        engine.setProperty("voice", voices[voice_index].id)
+    
+    # Set PITCH
+    engine.setProperty("pitch", pitch)
+    
+    # Speak the text
+    engine.say(text)
+    engine.runAndWait()
+    engine.stop()
 
 # ============================================================================
 # PAGE CONFIGURATION
@@ -71,6 +110,9 @@ if 'camera_frame' not in st.session_state:
     
 if 'gesture_text' not in st.session_state:
     st.session_state.gesture_text = ""
+
+if 'sub_response' not in st.session_state:
+    st.session_state.sub_response = ""
     
 if 'speech_text' not in st.session_state:
     st.session_state.speech_text = ""
@@ -89,6 +131,9 @@ if 'gesture_recognizer' not in st.session_state:
     
 if 'camera_thread' not in st.session_state:
     st.session_state.camera_thread = None
+
+if "final_recognized_gesture_app" not in st.session_state:
+    st.session_state.final_recognized_gesture_app = None
 
 # ============================================================================
 # UTILITY FUNCTIONS
@@ -135,15 +180,17 @@ def initialize_gesture_recognizer():
             add_status_message(f"Model not found at {model_path}", "error")
             return None
         
-        recognizer = GestureRecognitionApp(
+        recognizer_app1 = GestureRecognitionApp(
             model_path=model_path,
             camera_index=0
         )
         
-        if recognizer.initialize_recognizer() and recognizer.initialize_camera():
-            recognizer.start_time = __import__('time').time()
+        st.session_state.final_recognized_gesture_app = recognizer_app1
+
+        if recognizer_app1.initialize_recognizer() and recognizer_app1.initialize_camera():
+            recognizer_app1.start_time = __import__('time').time()
             add_status_message("✓ Gesture recognizer initialized successfully", "success")
-            return recognizer
+            return recognizer_app1
         else:
             add_status_message("✗ Failed to initialize gesture recognizer", "error")
             return None
@@ -205,23 +252,25 @@ def process_gesture_recognition(frame):
         add_status_message("👆 Processing gesture...", "info")
         
         # Process frame
-        recognizer = st.session_state.gesture_recognizer
-        recognizer.process_frame(frame)
+        # recognizer_app = st.session_state.gesture_recognizer
+        st.session_state.final_recognized_gesture_app.process_frame(frame)
         
         # Get latest detected gestures
-        gestures = recognizer.get_detected_gestures()
-        
+        gestures = st.session_state.final_recognized_gesture_app.get_detected_gestures()
+        timex.sleep(0.5)
+          # Allow some time for processing
+        # st.info(gestures)
         if gestures:
             latest_gesture = gestures[-1]
             gesture_name = latest_gesture['gesture']
             confidence = latest_gesture['confidence']
             
-            st.session_state.gesture_text = gesture_name
+            
             add_status_message(
                 f"✓ Gesture detected: {gesture_name} (Confidence: {confidence:.2f})",
                 "success"
             )
-            recognizer.clear_gestures()
+            st.session_state.final_recognized_gesture_app.clear_gestures()
             return gesture_name
         else:
             add_status_message("⚠️ No gesture detected in frame", "warning")
@@ -229,6 +278,75 @@ def process_gesture_recognition(frame):
             
     except Exception as e:
         add_status_message(f"✗ Gesture recognition error: {str(e)}", "error")
+        return ""
+
+def gesture_to_action(gesture_name: str):
+    """
+    Map gesture name to action text
+    
+    Args:
+        gesture_name: The detected gesture name
+        
+    Returns:
+        tuple: (action_text, is_valid_gesture)
+    """
+    gesture_mapping = {
+        'thumb_up': 'Bring the cathether',
+        'open_palm': 'Go back to neutral position',
+        'closed_fist': 'Stop'
+    }
+    
+    if gesture_name.lower() in gesture_mapping:
+        action_text = gesture_mapping[gesture_name.lower()]
+        return action_text, True
+    else:
+        return "", False
+
+def process_gesture_action_to_llm(gesture_name: str):
+    """
+    Process gesture name by converting to action text and feeding to LLM
+    
+    Args:
+        gesture_name: The detected gesture name
+        
+    Returns:
+        str: LLM response with instructions
+    """
+    try:
+        if not gesture_name.strip():
+            add_status_message("⚠️ No gesture to process", "warning")
+            return ""
+        
+        # Convert gesture to action text
+        action_text, is_valid = gesture_to_action(gesture_name)
+        
+        if not is_valid:
+            add_status_message(
+                f"⚠️ Gesture '{gesture_name}' not recognized. Valid gestures: thumbs_up, open_palm, closed_fist",
+                "warning"
+            )
+            return ""
+        
+        add_status_message(f"👆 Gesture '{gesture_name}' → Action: '{action_text}'", "info")
+        
+        # Create a prompt for LLM to generate instructions
+        llm_prompt = f"Generate detailed step-by-step instructions for the following medical robot action: {action_text}"
+        
+        add_status_message(f"🤖 Processing action through LLM: '{action_text}'", "info")
+        
+        # Query LLM with the action text
+        llm_response = query_cerebras(llm_prompt)
+        
+        if llm_response:
+            st.session_state.llm_output = llm_response
+            add_status_message("✓ LLM generated instructions successfully", "success")
+            return llm_response
+        else:
+            add_status_message("✗ LLM returned empty response", "error")
+            return ""
+            
+    except Exception as e:
+        add_status_message(f"✗ Error processing gesture action: {str(e)}", "error")
         return ""
 
 def process_llm_orchestrator(text_input: str):
@@ -253,7 +371,7 @@ def process_llm_orchestrator(text_input: str):
     except Exception as e:
         add_status_message(f"✗ LLM processing error: {str(e)}", "error")
         return ""
-
+    
 # ============================================================================
 # MAIN UI LAYOUT
 # ============================================================================
@@ -308,16 +426,45 @@ with st.sidebar:
     if st.button("🔧 Initialize Gesture Recognizer"):
         st.session_state.gesture_recognizer = initialize_gesture_recognizer()
     
+    if st.button("Run Gesture Recognition on Captured Frame"):
+        if st.session_state.camera_frame is not None:
+            gest_name = process_gesture_recognition(st.session_state.camera_frame)
+            st.session_state.gesture_text = gest_name
+            add_status_message(f"Gesture Set Final: {gest_name}", "info")
+        else:
+            add_status_message("⚠️ No captured frame to process", "warning")
+            st.session_state.gesture_text = ""
     st.divider()
     
+
+    if st.session_state.gesture_text is not None:
+        if len(st.session_state.gesture_text) > 1:
+            st.session_state.sub_response=gesture_to_action(st.session_state.gesture_text)
+            
+            add_status_message(f"Gesture Action: {st.session_state.sub_response}", "info")
+# add Gesture Action to LLM Button
+
+
     # Process Button
     if st.button("⚡ Process Through LLM Orchestrator", use_container_width=True):
-        combined = f"{st.session_state.gesture_text} {st.session_state.speech_text}".strip()
+        if len(st.session_state.sub_response) > 1:
+            text_to_speech(f"Gesture recognized as {st.session_state.sub_response}. Executing action.")
+
+        combined = f"{st.session_state.sub_response} {st.session_state.speech_text}".strip()
+        
+
+
         if combined:
             st.session_state.combined_text = combined
             process_llm_orchestrator(combined)
         else:
             add_status_message("⚠️ No input data (gesture or speech) to process", "warning")
+
+    st.divider()
+
+    # Run Unity Runner
+    if st.button("🎮 Run Unity Runner"):
+        unity_runner()
 
 # Main content area
 main_col1, main_col2 = st.columns(2)
@@ -331,7 +478,7 @@ with main_col1:
         st.subheader("📹 Camera Preview")
         if st.session_state.camera_frame is not None:
             frame_rgb = cv2.cvtColor(st.session_state.camera_frame, cv2.COLOR_BGR2RGB)
-            st.image(frame_rgb, use_column_width=True)
+            st.image(frame_rgb, caption="Captured Camera Frame")
         else:
             st.info("Click 'Capture Frame' to see preview")
     
@@ -372,6 +519,12 @@ with main_col2:
             # Try to parse as JSON and display nicely
             output_json = json.loads(st.session_state.llm_output)
             st.json(output_json)
+
+            #Save Json file to a specfic location
+            locat = os.path.join(r"C:\Users\kmu61\Downloads\Faps_unity-main\Faps_unity-main\Assets\Plans", 'tool_delivery_plan.json')
+            with open(locat, 'w') as json_file:
+                json.dump(output_json, json_file, indent=4)
+            
             
             # Display summary
             st.subheader("📋 Task Summary")
