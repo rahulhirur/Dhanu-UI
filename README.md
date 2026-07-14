@@ -1,4 +1,15 @@
+---
+title: DhanUI
+emoji: 🤖
+colorFrom: blue
+colorTo: indigo
+sdk: streamlit
+app_file: Frontend_Streamlit/front_end.py
+pinned: false
+---
+
 # DhanUI - Robot Control Interface
+
 
 A comprehensive Streamlit application for multi-modal robot control integrating camera feed, microphone input, gesture recognition, speech-to-text, and LLM-based task orchestration.
 

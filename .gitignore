@@ -1,4 +1,24 @@
+# Virtual environments
 /huienv/
 /hackvenv/
+.venv/
+
+# Environment
 .env
+
+# Python
 *.pyc
+__pycache__/
+*.egg-info/
+dist/
+build/
+
+# uv
+uv.lock
+
+# Tools
+.ruff_cache/
+.pytest_cache/
+
+# Plans output (generated at runtime)
+plans/

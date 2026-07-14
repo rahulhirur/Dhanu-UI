@@ -5,9 +5,15 @@ import json
 
 load_dotenv()
 
-client = Cerebras(
-    api_key=os.getenv("CEREBRAS_API_KEY")
-)
+_client = None
+
+
+def _get_client():
+    global _client
+    if _client is None:
+        _client = Cerebras(api_key=os.getenv("CEREBRAS_API_KEY"))
+    return _client
+
 
 JSON_SCHEMA = {
     "type": "object",
@@ -419,7 +425,7 @@ FEW_SHOT_EXAMPLES = [
 
 
 def query_cerebras(user_text: str) -> str:
-    response = client.chat.completions.create(
+    response = _get_client().chat.completions.create(
         model="gpt-oss-120b",
         messages=[
             {
