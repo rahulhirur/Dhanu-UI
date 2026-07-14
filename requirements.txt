@@ -30,14 +30,12 @@ matplotlib==3.10.8
 mediapipe==0.10.32
 narwhals==2.15.0
 numpy==2.4.1
-opencv-contrib-python==4.13.0.90
-opencv-python==4.13.0.90
+opencv-python-headless==4.13.0.90
 packaging==26.0
 pandas==2.3.3
 pillow==12.1.0
 protobuf==6.33.4
 pyarrow==23.0.0
-PyAudio==0.2.14
 pycparser==3.0
 pydantic==2.12.5
 pydantic_core==2.41.5
